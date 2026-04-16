@@ -7,12 +7,11 @@ app = FastAPI()
 def read_item(item_id: int):
     items = ["Laptop", "Phone", "Tablet"]
     
-    # BUG: This will cause an "IndexError: list index out of range" 
-    # if you request an ID of 3 or higher, resulting in a 
-    # 500 Internal Server Error.
+    if item_id < 0 or item_id >= len(items):
+        return {"error": f"Item ID {item_id} not found. Valid IDs: 0-{len(items)-1}"}, 404
+    
     item = items[item_id]
     
     return {"item": item}
 
 uvicorn.run(app)
-

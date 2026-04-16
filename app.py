@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 import uvicorn
 
 app = FastAPI()
@@ -7,12 +7,14 @@ app = FastAPI()
 def read_item(item_id: int):
     items = ["Laptop", "Phone", "Tablet"]
     
-    # BUG: This will cause an "IndexError: list index out of range" 
-    # if you request an ID of 3 or higher, resulting in a 
-    # 500 Internal Server Error.
+    if item_id < 0 or item_id >= len(items):
+        raise HTTPException(
+            status_code=404,
+            detail=f"Item with id {item_id} not found. Valid IDs are 0-{len(items) - 1}."
+        )
+    
     item = items[item_id]
     
     return {"item": item}
 
 uvicorn.run(app)
-
